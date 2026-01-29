@@ -1,4 +1,3 @@
-
 import React from 'react'
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -74,7 +73,7 @@ const AllPosts = () => {
 
   const handleDelete = async (postId) => {
     try {
-      await axios.delete(`${API_BASE_URL}/jobPosts/${postId}`);
+      await axios.delete(`${API_BASE_URL}/jobPost/${postId}`);
       setPosts((prevPosts) => prevPosts.filter((p) => p.postId !== postId));
     } catch (error) {
       console.error("Failed to delete post:", error);

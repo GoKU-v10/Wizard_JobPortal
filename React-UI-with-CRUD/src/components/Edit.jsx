@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Typography, TextField, Button, Paper, Box } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 
 const initial = {
   postId: "",
@@ -17,10 +18,9 @@ const Edit = () => {
   const [form, setForm] = useState(initial);
   const [currId] = useState(location.state.id);
 
-
   useEffect(() => {
-    const fetchInitialPosts = async (id) => {  
-      const response = await axios.get(`http://localhost:8080/jobPost/${id}`);
+    const fetchInitialPosts = async (id) => {
+      const response = await axios.get(`${API_BASE_URL}/jobPost/${id}`);
       console.log(response.data);
       setForm(response.data);
     };
@@ -29,76 +29,104 @@ const Edit = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios      
-      .put("http://localhost:8080/jobPost",form)
+    const updatedForm = {
+      ...form,
+      postId: Number(form.postId),
+      reqExperience: Number(form.reqExperience),
+      postTechStack: Array.isArray(form.postTechStack) ? form.postTechStack.filter(Boolean) : [],
+      postProfile: form.postProfile || '',
+      postDesc: form.postDesc || ''
+    };
+    console.log('Submitting update:', updatedForm);
+    if (!updatedForm.postId || !updatedForm.postProfile || !updatedForm.postDesc) {
+      alert('Please fill all required fields.');
+      return;
+    }
+    if (!updatedForm.postTechStack || updatedForm.postTechStack.length === 0) {
+      alert('Please select at least one skill.');
+      return;
+    }
+    axios
+      .put(`${API_BASE_URL}/jobPost`, updatedForm)
       .then((resp) => {
         console.log(resp.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.log('Backend error:', error.response?.data || error);
+        alert('Update failed: ' + (error.response?.data?.message || error.message));
       });
-      navigate('/')
-    };
-
+    navigate("/");
+  };
 
   const handleChange = (e) => {
-    setForm({ ...form, postTechStack: [...form.postTechStack, e.target.value] });
+    const { value, checked } = e.target;
+    if (checked) {
+      setForm({
+        ...form,
+        postTechStack: [...form.postTechStack, value],
+      });
+    } else {
+      setForm({
+        ...form,
+        postTechStack: form.postTechStack.filter((skill) => skill !== value),
+      });
+    }
   };
 
   const skillSet = [
     {
-      name: "Javascript"
+      name: "Javascript",
     },
     {
-      name: "Java"
+      name: "Java",
     },
     {
-      name: "Spring Framework"
+      name: "Spring Framework",
     },
     {
-      name: "Python"
+      name: "Python",
     },
     {
-      name: "Django"
+      name: "Django",
     },
     {
-      name: "Rust"
+      name: "Rust",
     },
     {
-      name: "SpringBoot"
+      name: "SpringBoot",
     },
     {
-      name: "Hibernate"
+      name: "Hibernate",
     },
     {
-      name: "PostgreSQL"
+      name: "PostgreSQL",
     },
     {
-      name: "HTML5"
+      name: "HTML5",
     },
     {
-      name: "CSS3"
+      name: "CSS3",
     },
     {
-      name: "React"
+      name: "React",
     },
     {
-      name: "NodeJs"
+      name: "NodeJs",
     },
     {
-      name: "ExpressJs"
+      name: "ExpressJs",
     },
     {
-      name: "NextJs"
+      name: "NextJs",
     },
     {
-      name: "Three.JS"
+      name: "Three.JS",
     },
     {
-      name: "Artificial Intelligence"
+      name: "Artificial Intelligence",
     },
     {
-      name: "Machine Learning"
+      name: "Machine Learning",
     },
   ];
 
@@ -169,6 +197,7 @@ const Edit = () => {
                           id={`custom-checkbox-${index}`}
                           name={name}
                           value={name}
+                          checked={form.postTechStack.includes(name)}
                           onChange={handleChange}
                         />
                         <label htmlFor={`custom-checkbox-${index}`}>
@@ -185,7 +214,6 @@ const Edit = () => {
             sx={{ width: "50%", margin: "2% auto" }}
             variant="contained"
             type="submit"
-          
           >
             Submit
           </Button>
