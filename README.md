@@ -1,8 +1,6 @@
 🧙‍♂️ Wizard Job Portal
 Wizard Job Portal is a full-stack web application designed to simplify and streamline the job search and hiring process for both job seekers and recruiters. It provides a seamless platform to post jobs, apply to positions, and manage recruitment workflows.
 
-🚀 Features
-🔐 Secure Authentication (JWT-based login for users and recruiters)
 
 📝 Job Posting & Management (for recruiters)
 
